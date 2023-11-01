@@ -5,7 +5,7 @@ import Errors from '../errors/errors.js';
 
 
 function createPostModel() {
-    const post = new mongoose.Schema({
+    const blog = new mongoose.Schema({
         title: {
             // título do blog
             type: String,
@@ -42,7 +42,7 @@ function createPostModel() {
      * são permitidas.
      * 
      */
-    post.pre("save", async function(next) {
+    blog.pre("save", async function(next) {
         if (!this.isModified(this.images)) return next();
 
         // operação que verifica cada um dos itens da lista.
@@ -68,18 +68,18 @@ function createPostModel() {
      * O título não pode exceder 120 caracteres, e a
      * descrição não pode exceder 5000.
      */
-    post.pre("save", function(next) {
+    blog.pre("save", function(next) {
         // Verificação do tamanho de ambas.
         if (this.description.length > 5000) throw new Errors.DescriptionLengthError('A descrição não deve exceder 5000 caracteres.');
         if (this.title.length > 120) throw new Errors.TitleLengthError('O título não deve exceder 120 caracteres.');
         next();
     });
 
-    return new mongoose.model('Blog', post, 'Blogs')
+    return new mongoose.model('Blog', blog, 'Blogs')
 };
 
-export const postModel = createPostModel();
+export const blogModel = createPostModel();
 
 export const registerBlog = async (title, description, images, authorId) => {
-    return await new postModel({title, description, images, authorId}).save();
+    return await new blogModel({title, description, images, authorId}).save();
 };

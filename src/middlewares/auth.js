@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -39,3 +40,12 @@ export function validateToken(req, res, next) {
         next();
     });
 }
+
+/**
+ * 
+ * @param {*} token 
+ * @returns 
+ */
+export function userFromToken(token) {
+    return mongoose.Types.ObjectId(jwt.decode(token, process.env.TOKEN)._id);
+};
