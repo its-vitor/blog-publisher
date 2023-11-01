@@ -9,12 +9,14 @@ class ImageTypeError extends CustomError {}
 class ImageSizeError extends CustomError {}
 class DescriptionLengthError extends CustomError {}
 class TitleLengthError extends CustomError {}
+class AuthorNotFound extends CustomError {}
 
 const Errors = {
     ImageTypeError,
     ImageSizeError,
     DescriptionLengthError,
-    TitleLengthError
+    TitleLengthError,
+    AuthorNotFound
 };
 
 export default Errors;

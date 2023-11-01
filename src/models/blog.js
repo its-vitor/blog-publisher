@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import * as fileType from 'file-type';
 import Errors from '../errors/errors.js';
 
+
 function createPostModel() {
     const post = new mongoose.Schema({
         title: {
@@ -24,6 +25,12 @@ function createPostModel() {
             // ID do criador daquele post
             type: mongoose.Types.ObjectId,
             required: true,
+        },
+        likes: {
+            // Número de curtidas.
+            type: [Object],
+            required: false,
+            default: [],
         }
     });
 
@@ -68,7 +75,11 @@ function createPostModel() {
         next();
     });
 
-    post.pre("save", async function(next) {
+    return new mongoose.model('Blog', post, 'Blogs')
+};
 
-    });
-}
+export const postModel = createPostModel();
+
+export const registerBlog = async (title, description, images, authorId) => {
+    return await new postModel({title, description, images, authorId}).save();
+};
