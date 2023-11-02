@@ -39,6 +39,19 @@ export const likeBlog = async (req, res) => {
     }
 };
 
+export const commentBlog = async (req, res) => {
+    const auth = req.headers['authorization'];
+    const token = auth && auth.split(' ')[1];
+    const { blogId, content } = req.body
+
+    try {
+        await blog.updateOne({ _id: blogId }, { $push: { comments: { authorId: userFromToken(token), content: content } } });
+        res.status(200).json({ 'message': 'Seu comentário foi publicado!' });
+    } catch (err) {
+        res.status(500).json({ 'message': 'Não foi possível encontrar o seu post.' });
+    }
+};
+
 export const getUserRecentPosts = async (req, res) => {
     const auth = req.headers['authorization'];
     const token = auth && auth.split(' ')[1];
