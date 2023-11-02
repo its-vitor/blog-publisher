@@ -1,7 +1,6 @@
-import { registerBlog, blog } from '../models/blog.js'
+import { registerBlog, blogModel } from '../models/blog.js'
 import { userFromToken } from '../middlewares/auth.js'
 import Errors from '../exceptions/errors.js';
-import mongoose from 'mongoose';
 
 export const publishBlog = async (req, res) => {
     const auth = req.headers['authorization'];
@@ -33,22 +32,52 @@ export const likeBlog = async (req, res) => {
     const { blogId } = req.body
 
     try {
-        await blog.updateOne({ _id: blogId }, { $push: { likes: { _id: userFromToken(token) }}})
+        await blogModel.updateOne({ _id: blogId }, { $push: { likes: { _id: userFromToken(token) }}})
         res.status(200).json({ 'message': 'Sua curtida foi contabilizada!'})
     } catch (err) {
         res.status(500).json({ 'message': 'Não foi possível encontrar o seu post.' })
     }
 };
 
-export const commentBlog = async (req, res) => {
+export const getUserRecentPosts = async (req, res) => {
     const auth = req.headers['authorization'];
     const token = auth && auth.split(' ')[1];
-    const { blogId, content } = req.body
-
+    let { start, size } = req.body;
     try {
-        await blog.updateOne({ _id: blogId }, { $push: { comments: { authorId: userFromToken(token), content: content } } });
-        res.status(200).json({ 'message': 'Seu comentário foi publicado!' });
+        size = parseInt(size);
+        start = parseInt(start);
+        if (size > 100) return res.status(401).json({ 'message': 'O tamanho da lista não pode ser maior que cem elementos.' });
+        const authorId = userFromToken(token);
+        const recentPosts = await blogModel.find({ authorId }).sort({ createdAt: -1 }).skip(start).limit(size);
+        res.status(200).json({ 'userPosts': recentPosts });
     } catch (err) {
-        res.status(500).json({ 'message': 'Não foi possível encontrar o seu post.' });
+        res.status(500).json({ 'message': 'Ocorreu um erro ao buscar os posts.' });
+    }
+};
+
+export const getUserPostsById = async (req, res) => {
+    let { start, size, userId } = req.body;
+    try {
+        size = parseInt(size);
+        start = parseInt(start);
+        if (size > 100) return res.status(401).json({ 'message': 'O tamanho da lista não pode ser maior que cem elementos.' });
+        const userPosts = await blog.find({ authorId: userId }).sort({ createdAt: -1 }).skip(start).limit(size);
+        res.status(200).json({ 'userPosts': userPosts });
+    } catch (err) {
+        res.status(500).json({ 'message': 'Ocorreu um erro ao buscar os posts.' });
+    }
+};
+
+
+export const getRecentPosts = async (req, res) => {
+    let { start, size } = req.body;
+    try {
+        size = parseInt(size);
+        start = parseInt(start);
+        if (size > 100) return res.status(401).json({ 'message': 'O tamanho da lista não pode ser maior que cem elementos.' });
+        const recentPosts = await blogModel.find().sort({ createdAt: -1 }).skip(start).limit(size);
+        res.status(200).json({ 'recentPosts': recentPosts });
+    } catch (err) {
+        res.status(500).json({ 'message': 'Ocorreu um erro ao buscar os posts.' });
     }
 };

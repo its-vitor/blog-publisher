@@ -36,6 +36,11 @@ export const blog = new mongoose.Schema({
         required: false,
         default: [],
     },
+    createdAt: {
+        // Data de criação do post
+        type: Date,
+        default: Date.now,
+    },
 });
 
 function createPostModel() {
@@ -83,8 +88,8 @@ function createPostModel() {
     return new mongoose.model('Blog', blog, 'Blogs')
 };
 
-export const blogModel = createPostModel();
+export const blogModel = new createPostModel();
 
 export const registerBlog = async (title, description, images, authorId) => {
-    return await new blogModel({title, description, images, authorId}).save();
+    return await blogModel({title, description, images, authorId}).save();
 };

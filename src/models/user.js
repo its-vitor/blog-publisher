@@ -19,6 +19,10 @@ export const user = new mongoose.Schema({
         type: String,
         required: true,
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 function createUserModel() {
@@ -51,8 +55,8 @@ function createUserModel() {
 /**
  * Criação do modelo do usuário.
  */
-export const userModel = createUserModel();
+export const userModel = new createUserModel();
 
 export const registerUser = async (username, email, password) => {
-    return await new userModel({username, email, password}).save()
+    return await userModel({username, email, password}).save()
 };
