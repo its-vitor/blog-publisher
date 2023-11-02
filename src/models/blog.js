@@ -3,37 +3,42 @@ import sharp from 'sharp';
 import * as fileType from 'file-type';
 import Errors from '../errors/errors.js';
 
+export const blog = new mongoose.Schema({
+    title: {
+        // título do blog
+        type: String,
+        required: true,
+    },
+    description: {
+        // descrição do blog
+        type: String,
+        required: true,
+    },
+    images: {
+        // lista de imagens do blog
+        type: [Buffer],
+        required: false,
+    },
+    authorId: {
+        // ID do criador daquele post
+        type: mongoose.Types.ObjectId,
+        required: true,
+    },
+    likes: {
+        // Número de curtidas.
+        type: [Object],
+        required: false,
+        default: [],
+    },
+    comments: {
+        // Comentários do blog.
+        type: [Object],
+        required: false,
+        default: [],
+    },
+});
 
 function createPostModel() {
-    const blog = new mongoose.Schema({
-        title: {
-            // título do blog
-            type: String,
-            required: true,
-        },
-        description: {
-            // descrição do blog
-            type: String,
-            required: true,
-        },
-        images: {
-            // lista de imagens do blog
-            type: [Buffer],
-            required: false,
-        },
-        authorId: {
-            // ID do criador daquele post
-            type: mongoose.Types.ObjectId,
-            required: true,
-        },
-        likes: {
-            // Número de curtidas.
-            type: [Object],
-            required: false,
-            default: [],
-        }
-    });
-
     /**
      * Evento que é executado quando é criado um novo
      * post. Caso hajam imagens, é verificado se as

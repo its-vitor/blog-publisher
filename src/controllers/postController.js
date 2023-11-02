@@ -1,6 +1,7 @@
-import { registerBlog } from '../models/blog.js'
+import { registerBlog, blog } from '../models/blog.js'
 import { userFromToken } from '../middlewares/auth.js'
 import Errors from '../exceptions/errors.js';
+import mongoose from 'mongoose';
 
 export const publishBlog = async (req, res) => {
     const auth = req.headers['authorization'];
@@ -30,6 +31,13 @@ export const likeBlog = async (req, res) => {
     const auth = req.headers['authorization'];
     const token = auth && auth.split(' ')[1];
     const { blogId } = req.body
+
+    try {
+        await blog.updateOne({ _id: blogId }, { $push: { likes: { _id: userFromToken(token) }}})
+        res.status(200).json({ 'message': 'Sua curtida foi contabilizada!'})
+    } catch (err) {
+        res.status(500).json({ 'message': 'Não foi possível encontrar o seu post.' })
+    }
 };
 
 export const commentBlog = async (req, res) => {

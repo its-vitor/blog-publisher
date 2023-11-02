@@ -1,28 +1,27 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
+/**
+ * Declaração do esquema da entidade usuário.
+ */
+export const user = new mongoose.Schema({
+    nickname: {
+        type: String,
+        required: true,
+        // nickname ou nome do usuário
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+});
+
 function createUserModel() {
-    /**
-     * Declaração do esquema da entidade usuário.
-     */
-    const user = new mongoose.Schema({
-        nickname: {
-            type: String,
-            required: true,
-            // nickname ou nome do usuário
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-    });
-
-
     /**
      * Evento que é executado quando algum dado é salvo no banco de dados.
      * Ele criptografa a senha utilizando função de callback.
